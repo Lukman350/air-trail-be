@@ -10,7 +10,7 @@ import (
 
 var JetPhotosRouter Router = Router{
 	Name:     "JetPhotos API",
-	Endpoint: "/api/jet_photos",
+	Endpoint: "/jet_photos",
 	Handler:  jetPhotosHandler,
 	Method:   GET,
 }
