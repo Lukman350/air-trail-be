@@ -2,6 +2,8 @@ package routers
 
 import (
 	"air-trail-backend/api"
+	"air-trail-backend/database"
+	"air-trail-backend/database/models"
 	"air-trail-backend/utils"
 	"encoding/json"
 	"log"
@@ -99,6 +101,18 @@ func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 			})
 			continue
 		}
+
+		aircraftData := models.Aircraft{}
+		database.Pgsql.Find(&aircraftData, data.IcaoAddress)
+
+		if aircraftData.Registration != "" {
+			data.Registration = &aircraftData.Registration
+			data.AircraftType = &aircraftData.TypeCode
+		}
+
+		// if data.Registration != nil {
+		// 	data.Registration = &strings.Split(*data.Registration, " ")[0]
+		// }
 
 		api.Cat021Cache.Store(data.IcaoAddress, data)
 
