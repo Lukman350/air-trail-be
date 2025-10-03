@@ -15,7 +15,7 @@ func main() {
 	port := env.GetEnv("APP_PORT", "8080")
 
 	gin.SetMode(mode)
-	router := gin.New()
+	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5173"},
