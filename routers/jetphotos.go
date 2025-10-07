@@ -27,7 +27,6 @@ func jetPhotosHandler(ctx *gin.Context) {
 	var params JetPhotosQueryParams
 
 	err := ctx.ShouldBind(&params)
-	log.Println(err)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return

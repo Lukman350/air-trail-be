@@ -95,10 +95,13 @@ func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 		if *data.UpdateDelete == "DELETE" {
 			api.Cat021Cache.Delete(data.IcaoAddress)
 
-			_ = ws.SendMessage(map[string]any{
+			if err := ws.SendMessage(map[string]any{
 				"icaoAddress": data.IcaoAddress,
 				"delete":      true,
-			})
+			}); err != nil {
+				log.Println(err.Error())
+			}
+
 			continue
 		}
 
@@ -118,7 +121,7 @@ func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 
 		if err := ws.SendMessage(&data); err != nil {
 			log.Println(err.Error())
-			return
+			continue
 		}
 	}
 }
