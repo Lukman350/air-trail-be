@@ -14,6 +14,7 @@ FROM alpine:latest
 
 WORKDIR /app
 COPY --from=builder /app/air_trail_backend .
+COPY --from=builder /app/static ./static
 COPY .env .
 
 # non-root user
