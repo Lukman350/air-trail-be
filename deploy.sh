@@ -23,5 +23,10 @@ echo "[DOCKER] Removing old container if exists..."
 docker rm -f $APP_NAME 2>/dev/null || true
 
 echo "[DOCKER] Starting the application..."
-docker run -d --rm --name $APP_NAME -p $APP_PORT:$APP_PORT $DOCKER_IMAGE:$DOCKER_TAG
+docker run \
+	--add-host=host.docker.internal:host-gateway \
+	--log-driver=json-file \
+	--log-opt max-size=10m \
+	--log-opt max-file=3 \
+	-d --name $APP_NAME -p $APP_PORT:$APP_PORT $DOCKER_IMAGE:$DOCKER_TAG
 echo "[DOCKER] ✅ Application started on port $APP_PORT"
