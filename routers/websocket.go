@@ -60,10 +60,10 @@ func (ws *WebSocket) Disconnect() {
 
 func (ws *WebSocket) SendMessage(msg any) error {
 	if ws.Connection == nil {
-		return fmt.Errorf("[WS:%s] connection is not open", ws.Name)
+		return &utils.Cat021Error{Message: fmt.Sprintf("[WS:%s] connection is not open", ws.Name)}
 	}
 	if err := ws.Connection.WriteJSON(msg); err != nil {
-		return fmt.Errorf("[WS:%s] write error: %w", ws.Name, err)
+		return &utils.Cat021Error{Message: fmt.Sprintf("[WS:%s] write error: %s", ws.Name, err.Error())}
 	}
 	return nil
 }
@@ -75,8 +75,8 @@ func (ws *WebSocket) ReadLoop() {
 	for {
 		mt, message, err := ws.Connection.ReadMessage()
 		if err != nil {
-			ws.OnReadMessage(mt, message, err, ws)
-			return
+			ws.OnReadMessage(mt, message, &utils.Cat021Error{Message: fmt.Sprintf("[WS:%s] read error: %s", ws.Name, err.Error())}, ws)
+			break
 		}
 		ws.OnReadMessage(mt, message, nil, ws)
 	}
