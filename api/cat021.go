@@ -12,12 +12,8 @@ import (
 	"github.com/paulmach/orb/geojson"
 )
 
-var Cat021Channel chan Cat021 = make(chan Cat021)
+var Cat021Channel chan Cat021 = make(chan Cat021, 12)
 var Cat021Cache sync.Map
-
-type ICat021 interface {
-	Get() error
-}
 
 type Cat021 struct {
 	AsterixType     *string     `json:"asterixType"`
@@ -35,6 +31,7 @@ type Cat021 struct {
 	FirName         *string     `json:"firName"`
 	FpDep           *string     `json:"fpDep"`
 	FpDest          *string     `json:"fpDest"`
+	FpRoute         *string     `json:"fpRoute"`
 	AircraftType    *string     `json:"aircraftType"`
 	Registration    *string     `json:"registration"`
 	UpdateTimestamp *time.Time  `json:"updateTimestamp"`
@@ -45,7 +42,7 @@ type Cat021 struct {
 }
 
 func (data *Cat021) Get() error {
-	response, err := http.Get(BASE_URL + "/cat-021-track")
+	response, err := http.Get(BASE_URL_BDG + "/cat-021-track")
 
 	if err != nil {
 		log.Println(err.Error())

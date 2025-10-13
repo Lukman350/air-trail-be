@@ -53,7 +53,7 @@ func cat021Handler(ctx *gin.Context) {
 			cat021Ws.Disconnect()
 			return
 		case <-ticker.C:
-			go cat021.Get()
+			cat021.Get()
 		}
 	}
 
@@ -61,7 +61,10 @@ func cat021Handler(ctx *gin.Context) {
 
 func readWsMessage(mt int, msg []byte, err error, ws *WebSocket) {
 	if err != nil {
-		log.Println("Read error:", err)
+		switch err.(type) {
+		case *utils.Cat021Error:
+			log.Println(err.Error())
+		}
 		return
 	}
 
@@ -77,6 +80,7 @@ func readWsMessage(mt int, msg []byte, err error, ws *WebSocket) {
 func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 	for data := range ch {
 		// skip if outside bbox
+		// log.Printf("bbox: %+v\n", ws.BBox)
 		if ws.BBox != nil && !ws.BBox.Contains(data.Coordinates[1], data.Coordinates[0]) {
 			continue
 		}
@@ -108,9 +112,9 @@ func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 		aircraftData := models.Aircraft{}
 		database.Pgsql.Find(&aircraftData, data.IcaoAddress)
 
-		if aircraftData.Registration != "" {
-			data.Registration = &aircraftData.Registration
-			data.AircraftType = &aircraftData.TypeCode
+		if aircraftData.Registration != nil {
+			data.Registration = aircraftData.Registration
+			data.AircraftType = aircraftData.TypeCode
 		}
 
 		// if data.Registration != nil {
@@ -120,8 +124,11 @@ func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 		api.Cat021Cache.Store(data.IcaoAddress, data)
 
 		if err := ws.SendMessage(&data); err != nil {
-			log.Println(err.Error())
-			continue
+			switch err.(type) {
+			case *utils.Cat021Error:
+				log.Println(err.Error())
+			}
+			return
 		}
 	}
 }
