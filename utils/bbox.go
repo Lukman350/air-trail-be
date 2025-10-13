@@ -7,7 +7,7 @@ type BBox struct {
 	MaxLon float64 `json:"maxLon"`
 }
 
-func (b BBox) Contains(lat, lon float64) bool {
+func (b *BBox) Contains(lat, lon float64) bool {
 	return lat >= b.MinLat && lat <= b.MaxLat &&
 		lon >= b.MinLon && lon <= b.MaxLon
 }
