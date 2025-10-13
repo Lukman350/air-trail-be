@@ -1,16 +1,18 @@
 package routers
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 )
 
 type Method string
 
 const (
-	GET Method = "GET"
-	POST Method = "POST"
-	PUT Method = "PUT"
-	PATCH Method = "PATCH"
+	GET    Method = "GET"
+	POST   Method = "POST"
+	PUT    Method = "PUT"
+	PATCH  Method = "PATCH"
 	DELETE Method = "DELETE"
 )
 
@@ -22,14 +24,16 @@ type IRouter interface {
 }
 
 type Router struct {
-	Name string
+	Name     string
 	Endpoint string
-	Handler func(*gin.Context)
+	Handler  func(*gin.Context)
 	Method
 }
 
 func InitRouters(router *gin.Engine) {
 	for _, route := range ROUTERS {
+		log.Printf("Creating route for %s at %s", route.Name, route.Endpoint)
+
 		switch method := route.Method; method {
 		case GET:
 			router.GET(route.Endpoint, route.Handler)
