@@ -20,7 +20,7 @@ func init() {
 		DB_PORT     = env.GetEnv("POSTGRESQL_PORT", "5432")
 	)
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta",
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
 		DB_HOST,
 		DB_USER,
 		DB_PASSWORD,
