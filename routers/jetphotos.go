@@ -16,7 +16,7 @@ var JetPhotosRouter Router = Router{
 }
 
 type JetPhotosQueryParams struct {
-	Registration string `form:"reg"`
+	Registration string `form:"reg" json:"reg" binding:"required"`
 }
 
 func init() {
