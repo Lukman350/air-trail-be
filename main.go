@@ -17,14 +17,20 @@ func main() {
 	gin.SetMode(mode)
 	router := gin.Default()
 
-	router.Use(cors.New(cors.Config{
+	cors := cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
-	}))
+	})
+
+	router.Use(cors)
+
+	aircraftIcons := router.Group("/aircraft")
+	aircraftIcons.Use(cors)
+	aircraftIcons.Static("/", "./static/icons/aircraft")
 
 	routers.InitRouters(router)
 
