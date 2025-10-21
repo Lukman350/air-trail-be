@@ -2,8 +2,6 @@ package routers
 
 import (
 	"air-trail-backend/api"
-	"air-trail-backend/database"
-	"air-trail-backend/database/models"
 	"air-trail-backend/utils"
 	"encoding/json"
 	"log"
@@ -41,10 +39,10 @@ func cat021Handler(ctx *gin.Context) {
 
 	cat021 := api.Cat021{}
 
+	go sendWsMessage(&cat021Ws, api.Cat021Channel)
+
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
-
-	go sendWsMessage(&cat021Ws, api.Cat021Channel)
 
 	for {
 		select {
@@ -81,7 +79,7 @@ func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 	for data := range ch {
 		// skip if outside bbox
 		// log.Printf("bbox: %+v\n", ws.BBox)
-		if ws.BBox != nil && !ws.BBox.Contains(data.Coordinates[1], data.Coordinates[0]) {
+		if ws.BBox != nil && !ws.BBox.Contains(data.Latitude, data.Longitude) {
 			continue
 		}
 
@@ -108,18 +106,6 @@ func sendWsMessage(ws *WebSocket, ch <-chan api.Cat021) {
 
 			continue
 		}
-
-		aircraftData := models.Aircraft{}
-		database.Pgsql.Find(&aircraftData, data.IcaoAddress)
-
-		if aircraftData.Registration != nil {
-			data.Registration = aircraftData.Registration
-			data.AircraftType = aircraftData.TypeCode
-		}
-
-		// if data.Registration != nil {
-		// 	data.Registration = &strings.Split(*data.Registration, " ")[0]
-		// }
 
 		api.Cat021Cache.Store(data.IcaoAddress, data)
 

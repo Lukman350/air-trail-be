@@ -1,6 +1,8 @@
 package api
 
 import (
+	"air-trail-backend/database"
+	"air-trail-backend/database/models"
 	"encoding/json"
 	"io"
 	"log"
@@ -12,7 +14,7 @@ import (
 	"github.com/paulmach/orb/geojson"
 )
 
-var Cat021Channel chan Cat021 = make(chan Cat021, 12)
+var Cat021Channel chan Cat021 = make(chan Cat021, 65535)
 var Cat021Cache sync.Map
 
 type Cat021 struct {
@@ -73,6 +75,15 @@ func (data *Cat021) Get() error {
 		cat021.Coordinates = &coordinates
 		cat021.Latitude = coordinates[1]
 		cat021.Longitude = coordinates[0]
+
+		aircraftData := models.Aircraft{}
+		database.Pgsql.Find(&aircraftData, cat021.IcaoAddress)
+
+		if aircraftData.Registration != nil {
+			cat021.Registration = aircraftData.Registration
+			cat021.AircraftType = aircraftData.TypeCode
+		}
+
 		Cat021Channel <- cat021
 	}
 

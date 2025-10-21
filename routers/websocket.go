@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -12,7 +13,8 @@ import (
 
 var updgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
-		return true
+		origin := r.Header.Get("Origin")
+		return strings.Contains(origin, "localhost") || origin == "https://air-trail.lukmann.dev"
 	},
 }
 

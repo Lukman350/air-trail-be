@@ -8,6 +8,7 @@ import (
 type Airport struct {
 	ID                   int64   `gorm:"primaryKey" json:"id"`
 	Code                 string  `gorm:"size:12" json:"code"`
+	IataCode             string  `gorm:"size:12" json:"iata_code"`
 	Name                 string  `json:"name"`
 	Country              string  `gorm:"size:255" json:"country"`
 	Longitude            float64 `json:"longitude"`
@@ -24,6 +25,7 @@ type Airport struct {
 	Volume               string  `gorm:"size:128" json:"volume"`
 	PointType            string  `gorm:"size:255" json:"point_type"`
 	Designator           string  `gorm:"size:12" json:"designator"`
+	Type                 string  `gorm:"size:64" json:"type"`
 }
 
 func (Airport) TableName() string {
